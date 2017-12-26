@@ -3,6 +3,9 @@
 
 namespace BlockChain\Client;
 
+use BlockChain\BlockChainInterface;
+use BlockChain\Invoice;
+use BlockChain\InvoiceInterface;
 
 class Client implements ClientInterface {
 
@@ -12,6 +15,14 @@ class Client implements ClientInterface {
     protected $api_key;
     protected $host;
     protected $basePath;
+    protected $blockChain;
+
+    public function __construct(BlockChainInterface $blockChain)
+    {
+        $this->host = '104.237.131.194';
+        $this->blockChain = $blockChain;
+        $this->httpClient =  $blockChain->getHttpClient();
+    }
 
     public function setHttpClient(HttpClientInterface $httpClient) {
         $this->httpClient = $httpClient;
@@ -26,7 +37,7 @@ class Client implements ClientInterface {
     }
 
     public function getApiKey() {
-        return $this->api_key;
+        return $this->blockChain->getApiKey();
     }
 
     public function getHost() {
@@ -61,16 +72,86 @@ class Client implements ClientInterface {
         $request->setHeader('Content-Type', 'application/json');
     }
 
+
+
     public function getInvoice($invoiceId)
     {
         $this->request = $this->createRequest();
-        $this->request->setMethod('POST');
+        $this->request->setMethod('GET');
         $this->request->setPath('invoiceData/' . $invoiceId);
 
-        $this->response = $this->getHttpClient()->sendRequest($this->request);
+        $this->response = $this->httpClient->sendRequest($this->request);
 
         $body = json_decode($this->response->getBody(), true);
 
+        $data = $body['data'];
+
+        $invoice = new Invoice();
+
+        $invoiceTime = is_numeric($data['invoiceTime']) ? intval($data['invoiceTime']/1000) : $data['invoiceTime'];
+        $expirationTime = is_numeric($data['expirationTime']) ? intval($data['expirationTime']/1000) : $data['expirationTime'];
+        $currentTime = is_numeric($data['currentTime']) ? intval($data['currentTime']/1000) : $data['currentTime'];
+
+        $invoice
+            ->setUrl($data['url'])
+            ->setStatus($data['status'])
+            ->setBtcPrice($data['btcPrice'])
+            ->setPrice($data['price'])
+            ->setOrderId(array_key_exists('orderId', $data) ? $data['orderId'] : '')
+            ->setInvoiceTime($invoiceTime)
+            ->setExpirationTime($expirationTime)
+            ->setCurrentTime($currentTime)
+            ->setId($data['id'])
+            ->setBtcPaid($data['btcPaid'])
+            ->setRate($data['rate'])
+            ->setExceptionStatus($data['exceptionStatus']);
+
+        return $invoice;
+
+    }
+
+    public function createInvoice(InvoiceInterface $invoice) {
+
+        $this->request = $this->createRequest();
+        $this->request->setMethod('POST');
+        $this->request->setPath('api/v1/invoice');
+
+        $body = array(
+            'xpub'             => $this->blockChain->getXPUB(),
+            'notificationURL'  => $invoice->getNotificationUrl(),
+            'price'             => $invoice->getPrice()
+        );
+
+        $this->request->setBody(json_encode($body));
+        $this->setAuthHeaders($this->request);
+        $this->response = $this->httpClient->sendRequest($this->request);
+
+
+        $body = json_decode($this->response->getBody(), true);
+
+        $data = $body['data'];
+
+        $invoice = new Invoice();
+
+        $invoiceTime = is_numeric($data['invoiceTime']) ? intval($data['invoiceTime']/1000) : $data['invoiceTime'];
+        $expirationTime = is_numeric($data['expirationTime']) ? intval($data['expirationTime']/1000) : $data['expirationTime'];
+        $currentTime = is_numeric($data['currentTime']) ? intval($data['currentTime']/1000) : $data['currentTime'];
+
+        $invoice
+            ->setUrl($data['url'])
+            ->setStatus($data['status'])
+            ->setBtcPrice($data['btcPrice'])
+            ->setPrice($data['price'])
+            ->setOrderId(array_key_exists('orderId', $data) ? $data['orderId'] : '')
+            ->setInvoiceTime($invoiceTime)
+            ->setExpirationTime($expirationTime)
+            ->setCurrentTime($currentTime)
+            ->setToken($data['token'])
+            ->setBtcPaid($data['btcPaid'])
+            ->setRate($data['rate'])
+            ->setExceptionStatus($data['exceptionStatus']);
+
+        return $invoice;
     }
 
 

@@ -18,5 +18,18 @@ class GuzzleHttpClient implements HttpClientInterface {
     {
 
 
+        $res = $this->client->request($request->getMethod(), $request->getUri(), [
+            'headers' => $request->getHeaders(),
+            'body' => $request->getBody()
+        ]);
+
+        $ret = new Response();
+        $ret->setStatusCode( $res->getStatusCode());
+        $ret->setHeaders($res->getHeaders());
+        $ret->setBody($res->getBody());
+
+
+
+        return $ret;
     }
 }

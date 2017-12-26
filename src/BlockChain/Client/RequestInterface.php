@@ -11,6 +11,8 @@ interface RequestInterface
     public function getBody();
     public function getHeaders();
     public function getMethod();
-    
+
+    public function setHeader($header, $value);
+
 
 }

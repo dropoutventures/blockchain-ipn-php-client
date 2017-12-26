@@ -2,18 +2,28 @@
 
 namespace BlockChain;
 
+use BlockChain\Client\Client;
+use BlockChain\Client\GuzzleHttpClient;
 
-
-class BlockChian {
+class BlockChain implements BlockChainInterface {
 
     protected $api_key;
     protected $xpub;
+    protected $client;
+    protected $httpClient;
 
 
     public function __construct($api_key) {
 
         $this->api_key = $api_key;
+        $this->httpClient = new GuzzleHttpClient();
+        $this->client = new Client($this);
 
+    }
+
+    public function getHttpClient() {
+
+        return $this->httpClient;
     }
 
     public function setXPUB($xpub)
@@ -21,11 +31,22 @@ class BlockChian {
         $this->xpub = $xpub;
     }
 
-    public function getAuthHeaders()
-    {
-        $headers = ['x-authorization' => $this->api_key, 'Content-Type' => 'application/json'];
-        return headers;
+    public function getXPUB() {
+        return $this->xpub;
     }
 
- 
+    public function getApiKey() {
+        return $this->api_key;
+    }
+
+    public function getInvoice($invoiceId) {
+
+        return $this->client->getInvoice($invoiceId);
+
+    }
+
+    public function createInvoice(InvoiceInterface $invoice) {
+
+        return $this->client->createInvoice($invoice);
+    }
 }
