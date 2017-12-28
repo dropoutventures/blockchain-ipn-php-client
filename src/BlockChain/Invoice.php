@@ -21,6 +21,7 @@ class Invoice implements InvoiceInterface {
     protected $btcPaid;
     protected $rate;
     protected $token;
+    protected $address;
 
 
     public function getPrice() {
@@ -196,4 +197,14 @@ class Invoice implements InvoiceInterface {
         return $this;
     }
 
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function setAddress($address)
+    {
+        $this->address = $address;
+        return $this;
+    }
 }
