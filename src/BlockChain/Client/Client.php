@@ -118,6 +118,7 @@ class Client implements ClientInterface {
 
         $body = array(
             'xpub'             => $this->blockChain->getXPUB(),
+            'orderID'         => $invoice->getOrderId(),
             'notificationURL'  => $invoice->getNotificationUrl(),
             'price'             => $invoice->getPrice()
         );
@@ -142,7 +143,7 @@ class Client implements ClientInterface {
             ->setStatus($data['status'])
             ->setBtcPrice($data['btcPrice'])
             ->setPrice($data['price'])
-            ->setOrderId(array_key_exists('orderId', $data) ? $data['orderId'] : '')
+            ->setOrderId(array_key_exists('orderID', $data) ? $data['orderID'] : '')
             ->setInvoiceTime($invoiceTime)
             ->setExpirationTime($expirationTime)
             ->setCurrentTime($currentTime)
