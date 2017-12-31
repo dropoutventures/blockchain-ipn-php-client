@@ -5,7 +5,7 @@ namespace BlockChain;
 
 class Invoice implements InvoiceInterface {
 
-    protected $orderID;
+    protected $orderId;
     protected $notificationUrl;
     protected $redirectUrl;
     protected $status;
@@ -148,7 +148,7 @@ class Invoice implements InvoiceInterface {
 
     public function setOrderId($orderId)
     {
-        $this->orderID = $orderId;
+        $this->orderId = $orderId;
         return $this;
     }
 
