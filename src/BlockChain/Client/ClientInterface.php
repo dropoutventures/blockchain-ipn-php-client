@@ -9,4 +9,5 @@ interface ClientInterface
 {
     public function getInvoice($invoiceId);
     public function createInvoice(InvoiceInterface $invoice);
+    public function generateAddress($type);
 }

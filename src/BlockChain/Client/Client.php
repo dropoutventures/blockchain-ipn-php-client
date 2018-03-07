@@ -4,8 +4,10 @@
 namespace BlockChain\Client;
 
 use BlockChain\BlockChainInterface;
+use BlockChain\Address;
 use BlockChain\Invoice;
 use BlockChain\InvoiceInterface;
+
 
 class Client implements ClientInterface {
 
@@ -156,6 +158,40 @@ class Client implements ClientInterface {
         return $invoice;
     }
 
+
+    public function generateAddress($type) {
+
+        $this->request = $this->createRequest();
+        $this->request->setMethod('POST');
+        $this->request->setPath('api/v1/generate');
+
+        $body = array(
+            'xpub'             => $this->blockChain->getXPUB(),
+            'secret'         => 'notneededrightnow',
+            'callback'  => 'http://doesnotmaterirghtnow.com',
+            'type'             => $type
+        );
+
+        $this->request->setBody(json_encode($body));
+        $this->setAuthHeaders($this->request);
+        $this->response = $this->httpClient->sendRequest($this->request);
+
+
+        $body = json_decode($this->response->getBody(), true);
+
+        $data = $body['data'];
+
+
+        $address = new Address();
+
+
+        $address
+            ->setAddress($data['address'])
+            ->setIndex($data['index'])
+            ->setGap($data['gap']);
+
+        return $address;
+    }
 
 
 
