@@ -184,7 +184,7 @@ class Client implements ClientInterface {
 
         $address = new Address();
 
-
+     
         $address
             ->setAddress($data['address'])
             ->setIndex($data['index'])

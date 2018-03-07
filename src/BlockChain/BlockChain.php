@@ -49,4 +49,8 @@ class BlockChain implements BlockChainInterface {
 
         return $this->client->createInvoice($invoice);
     }
+
+    public function generateAddress($type) {
+        return $this->client->generateAddress($type);
+    }
 }
